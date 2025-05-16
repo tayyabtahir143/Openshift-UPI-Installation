@@ -259,7 +259,7 @@ fips: false
 pullSecret: '<YOUR_PULL_SECRET>'
 sshKey: '<YOUR_SSH_PUBLIC_KEY>'
 ```
-
+![Pull Secret](Images/pullsecret.png)
 ---
 
 ## 📆 Generate Manifests
@@ -276,6 +276,7 @@ cp install-config.yaml ocp4/
 openshift-install create manifests --dir ocp4
 ```
 
+
 Remove machine API manifests.
 Go inside the folder ocp4 and run the following command:
 
@@ -290,7 +291,7 @@ vim manifests/cluster-scheduler-02-config.yml
 ```
 
 Locate the ```bashmastersSchedulable``` parameter and ensure that it is set to ```bashfalse```.
-
+![Generating Manifests](Images/3.gif)
 ---
 
 ## ✨ Generate Ignition Configs
@@ -298,10 +299,11 @@ Locate the ```bashmastersSchedulable``` parameter and ensure that it is set to `
 ```bash
 openshift-install create ignition-configs --dir ocp4
 ```
-
+![Generating ignition configs](Images/4.gif)
 Ignition files have been generated. we need to convert them into the base64 encoding to use them as advance parameters in vsphere VMs.
 
 ```bash
+cd ocp4
 base64 -w0 master.ign > master.64
 base64 -w0 worker.ign > worker.64
 ```
@@ -344,7 +346,7 @@ cp bootstrap.ign /var/www/html/ocp4/
 chmod 777 /var/www/html/ocp4/bootstrap.ign
 systemctl enable httpd --now
 ```
-
+![Encoding ignition configs](Images/5.gif)
 ## 🚗 Create vSphere VMs
 Obtain the RHCOS OVA image. Images are available from the RHCOS image mirror page:https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/
 
