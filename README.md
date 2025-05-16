@@ -111,7 +111,7 @@ dhcp-host=00:50:56:b3:6a:d0,192.168.4.23
 dhcp-host=00:50:56:b3:f0:eb,192.168.4.24
 dhcp-host=00:50:56:b3:0e:f1,192.168.4.25
 ```
-![DNS Setup](Images/2.gif)
+
 
 
 #Configure /etc/dnshost file.
@@ -135,7 +135,7 @@ vim /etc/dnshost
 192.168.4.28 api.ocp4.tayyabtahir.com api
 192.168.4.28 api-int.ocp4.tayyabtahir.com api-int
 ```
-
+![DNS Setup](Images/2.gif)
 
 ---
 ## 🔹 HAProxy Configuration
@@ -200,9 +200,9 @@ listen ingress-router-80
 
 ## 📚 Create install-config.yaml
 
-Copy the pull secret from Redhat Openshift Console and add in install-config.yaml file.
+Copy the pull secret from Redhat Openshift Console: https://console.redhat.com/openshift/install/vsphere/user-provisioned , and add in install-config.yaml file.
 
-Add your public ssh key which can be generated with the following command:
+Add your public ssh key which can be generated with the command:
 ssh-keygen
 
 
