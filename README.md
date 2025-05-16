@@ -290,7 +290,7 @@ Check that the mastersSchedulable parameter in the ocp4/manifests/cluster-schedu
 vim manifests/cluster-scheduler-02-config.yml
 ```
 
-Locate the ```bash mastersSchedulable``` parameter and ensure that it is set to ```bash false```.
+Locate the ```mastersSchedulable``` parameter and ensure that it is set to ```false```.
 ![Generating Manifests](Images/3.gif)
 ---
 
