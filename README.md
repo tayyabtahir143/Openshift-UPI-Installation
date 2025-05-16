@@ -259,9 +259,9 @@ fips: false
 pullSecret: '<YOUR_PULL_SECRET>'
 sshKey: '<YOUR_SSH_PUBLIC_KEY>'
 ```
-![Pull Secret](Images/pullsecret.png)
----
 
+---
+![Pull Secret](Images/pullsecret.png)
 ## 📆 Generate Manifests
 
 create a folder and copy the install-config.yaml file in it.
