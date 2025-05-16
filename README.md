@@ -20,13 +20,11 @@ This guide provides a step-by-step walkthrough for deploying an OpenShift 4.18 c
 
 
 ---
-*Important: Openshift installation depend on these 2 dns records, they should be redirected to haproxy and haproxy should redirect them to all master nodes.
+## Important: Openshift installation depend on these 2 dns records, they should be redirected to haproxy and haproxy should redirect them to all master nodes.
 * api-int.ocp4.tayyabtahir.com
 * api.ocp4.tayyabtahir.com
 
-These records are mandatory, other all records are optional but better to have them as well.
-
-
+These records are mandatory, all other records are optional, but better to have them as well.
 
 ---
 
