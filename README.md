@@ -259,9 +259,9 @@ fips: false
 pullSecret: '<YOUR_PULL_SECRET>'
 sshKey: '<YOUR_SSH_PUBLIC_KEY>'
 ```
-
----
 ![Pull Secret](Images/pullsecret.png)
+---
+
 ## 📆 Generate Manifests
 
 create a folder and copy the install-config.yaml file in it.
@@ -292,7 +292,7 @@ vim manifests/cluster-scheduler-02-config.yml
 
 Locate the ```bash mastersSchedulable``` parameter and ensure that it is set to ```bash false```.
 ![Generating Manifests](Images/3.gif)
-
+---
 
 ## ✨ Generate Ignition Configs
 
@@ -347,6 +347,7 @@ chmod 777 /var/www/html/ocp4/bootstrap.ign
 systemctl enable httpd --now
 ```
 ![Encoding ignition configs](Images/5.gif)
+---
 ## 🚗 Create vSphere VMs
 Obtain the RHCOS OVA image. Images are available from the RHCOS image mirror page:https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/
 
