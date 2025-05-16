@@ -351,27 +351,38 @@ systemctl enable httpd --now
 ## 🚗 Create vSphere VMs
 Obtain the RHCOS OVA image. Images are available from the RHCOS image mirror page:https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/
 
+Download the latest RHCOS and create a template in vsphere. using this template we can create all master and worker VMs.
+![Encoding ignition configs](Images/6.gif)
 
 Provision the following:
 - `bootstrap`: RHCOS with `merge-bootstrap.64`
 - `master-1/2/3`: RHCOS with `master.64`
 - `worker-1/2`: RHCOS with `worker.64`
 
-guestinfo.ignition.config.data : Locate the base-64 encoded files that you created previously in this procedure, and paste the contents of the base64-encoded Ignition config file for this machine type.
+Create the Bootstrap VM from template with $ CPUs and 16GB RAM.
+Go to advance Parameters and set the following values:
 
-guestinfo.ignition.config.data.encoding : Specify base64.
+guestinfo.ignition.config.data : "merge-bootstrap.64 file value"
 
-disk.EnableUUID: Specify TRUE.
+guestinfo.ignition.config.data.encoding : base64
 
+disk.EnableUUID:  TRUE
+![Encoding ignition configs](Images/7.gif)
 
+Create the Master1 VM and copy the master.64 file date in advance parameters.
+![Encoding ignition configs](Images/8.gif)
 
+Copy the master1 and create master2 and master3.
+![Encoding ignition configs](Images/9.gif)
 
-Set advance parameters to fetch ignition:
-
+Create worker1 and worker2 VMs.
+![Encoding ignition configs](Images/10.gif)
 
 ---
 
 ## MAC Address to IP Binding.
+copy the mac addresses of all VMs and update them in dnsmasq file as per diagram.
+
 ```bash
 vim /etc/dnsmasq.conf
 dhcp-host=00:50:56:b3:c6:4a,192.168.4.27
@@ -383,24 +394,36 @@ dhcp-host=00:50:56:b3:6f:62,192.168.4.23
 dhcp-host=00:50:56:b3:4b:50,192.168.4.24
 dhcp-host=00:50:56:b3:24:01,192.168.4.25
 ```
+![Encoding ignition configs](Images/11.gif)
 
+---
 
 ## ⏳ Bootstrap Completion
 Start the bootstrap VM and verify if it has got the ignition data?
 
-Run this command in bastian host installation directory:
+![Encoding ignition configs](Images/12.png)
+
+
+Run this command in bastian host installation directory: 
 ```bash
 openshift-install wait-for bootstrap-complete --dir ocp4 --log-level=info
 ```
 
-Ssh the bootstrap node using core user from bastian host and run the following commands to see the progress:
+![Encoding ignition configs](Images/14.gif)
+
+SSH the bootstrap node using core user from the bastian host and run the following commands to see the bootstrap bootkube logs :
 ```bash
+ssh core@bootstrap
 journalctl -b -f -u release-image.service -u bootkube.service
 ```
 
+![Encoding ignition configs](Images/13.gif)
+
+Start all the master nodes as well. and wait for almost 01:30 hours.
+
+Once the "wait-for bootstrap-complete" command completes, Configure the kubeconfig file from the installation directory and verify the master nodes.
 
 
-Once "wait-for bootstrap-complete" command completed, delete the bootstrap node and configure the kubeconfig file from installation directory:
 
 ```bash
 mkdir /root/.kube
@@ -412,14 +435,22 @@ master1   Ready    control-plane,master   42m   v1.31.7
 master2   Ready    control-plane,master   43m   v1.31.7
 master3   Ready    control-plane,master   42m   v1.31.7
 ```
+Once master nodes are ready, remove the bootstrap node and remove its entries from the haproxy as well.
 
-Once master nodes are ready, Remove the bootstrap node and remove it's entries from haproxy LB as well.
+![Encoding ignition configs](Images/14.1.gif)
+
+
 ---
 
 ## 🤼‍♂️ Join Worker Nodes
 
-Boot workers with the `worker.64` file and they will auto-register. we just need to approve their certificates once they are registered.
+Boot workers with the `worker.64` file, and they will auto-register. we just need to approve their certificates once they are registered. 
+Start the worker nodes, and wait for 20 minutes.
 
+![Encoding ignition configs](Images/15.gif)
+
+
+Verify if there is any certificate pending? if yes, approve them with the following command.
 
 Check:
 ```bash
@@ -428,9 +459,12 @@ oc get csr
 oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs --no-run-if-empty oc adm certificate approve
 
 ```
+![Encoding ignition configs](Images/16.gif)
 
-Once certificates are approved, wait for 15 minutes, Worker nodes should be come up in ready state.
 
+Once certificates are approved, wait for 15 minutes. Worker nodes should come up in the ready state and all Cluster operators will be ready as well.
+
+![Encoding ignition configs](Images/17.gif)
 
 ---
 
@@ -442,37 +476,27 @@ oc get nodes
 oc get pods -A
 oc get route -n openshift-console
 ```
+![Encoding ignition configs](Images/18.gif)
+
+
 
 ---
 
-## 🛠️ Optional: Install vSphere CSI
+## Access openshift console on the web.
+Open kubeadmin-password file in openshift installation directory /ocp4/auth/.
+It contain the kebeadmin password to access the web console.
+
 
 ```bash
-oc apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/master/manifests/deploy/vsphere-csi.yaml
+cat /ocp4/auth/kubeadmin-password
+oc get route -n openshift-console
 ```
+![Encoding ignition configs](Images/19.gif)
+
+
 
 ---
 
-## 📃 Sample StorageClasses
-
-```bash
-oc get storageclass
-```
-
-Example:
-```text
-NAME                 PROVISIONER              DEFAULT
-thin-csi (default)   csi.vsphere.vmware.com   Yes
-```
-
----
-
-## 📷 Screenshots
-
-> ![vCenter VMs](images/vm-tree.png)
-> ![OpenShift Console](images/console-ui.png)
-
----
 
 ## 🔹 Resources
 
@@ -485,7 +509,7 @@ thin-csi (default)   csi.vsphere.vmware.com   Yes
 ## 😎 Author
 
 **Tayyab Tahir**  
-Senior DevOps & Cybersecurity Engineer  
-Email: tayyabccie@hotmail.com  
-GitHub: [@tayyabtahir](https://github.com/tayyabtahir)
+Senior DevOps Engineer  
+Email: Tayyabtahir@tayyabtahir.com 
+GitHub: [@tayyabtahir143](https://github.com/tayyabtahir143)
 
