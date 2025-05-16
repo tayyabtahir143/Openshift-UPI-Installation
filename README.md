@@ -292,8 +292,8 @@ vim manifests/cluster-scheduler-02-config.yml
 
 Locate the ```mastersSchedulable``` parameter and ensure that it is set to ```false```.
 ![Generating Manifests](Images/3.gif)
----
 
+---
 ## ✨ Generate Ignition Configs
 
 ```bash
