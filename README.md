@@ -15,7 +15,9 @@ This guide provides a step-by-step walkthrough for deploying an OpenShift 4.18 c
 - **Platform:** vSphere 8.0
 - **Domain:** `ocp4.tayyabtahir.com`
 
-![diagram](Images/diagram.png)
+
+<img src="Images/diagram.png" width="600"/>
+
 
 ---
 Important: Openshift installation depend on these 2 dns records, they should be redirected to haproxy and haproxy should redirect them to all master nodes.
