@@ -259,7 +259,7 @@ fips: false
 pullSecret: '<YOUR_PULL_SECRET>'
 sshKey: '<YOUR_SSH_PUBLIC_KEY>'
 ```
-![Pull Secret](Images/pullsecret.png)
+![Pull Secret](Images/pulsecret.png)
 ---
 
 ## 📆 Generate Manifests
