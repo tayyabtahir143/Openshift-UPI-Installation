@@ -46,10 +46,14 @@ These records are mandatory, other all records are optional but better to have t
 | Hostname                         | IP Address       | Description       |
 |----------------------------------|------------------|-------------------|
 | api.ocp4.Tayyabtahir.com          | 192.168.4.28   | API VIP (LB)      |
+| api-int.ocp4.Tayyabtahir.com     |  192.168.4.28    |  API-INT (LB)
 | *.apps.ocp4.Tayyabtahir.com       | 192.168.4.28   | Ingress VIP (LB)  |
 | bootstrap.ocp4.Tayyabtahir.com    | 192.168.4.27   | Bootstrap node    |
-| master-{1,2,3}.ocp4.Tayyabtahir.com | 192.168.4.21-23 | Master nodes      |
-| worker-{1,2}.ocp4.yamlforce.com | 192.168.100.24-25 | Worker nodes      |
+| master1.ocp4.Tayyabtahir.com | 192.168.4.21 | Master node      |
+| master2.ocp4.Tayyabtahir.com | 192.168.4.22 | Master node      |
+| master3.ocp4.Tayyabtahir.com | 192.168.4.23 | Master node      |
+| worker1.ocp4.yamlforce.com | 192.168.4.24 | Worker node      |
+| worker2.ocp4.yamlforce.com | 192.168.4.25 | Worker node      |
 
 ---
 
