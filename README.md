@@ -99,6 +99,9 @@ dhcp-host=00:50:56:b3:0e:f1,192.168.4.25
 
 
 ```
+![1](gifs/1.gif)
+
+
 Configure /etc/dnshost file.
 
 ```bash
