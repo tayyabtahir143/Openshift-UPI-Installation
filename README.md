@@ -42,6 +42,16 @@ This guide provides a step-by-step walkthrough for deploying an OpenShift 4.18 c
 ---
 
 ## 🚧 Tooling Setup
+Disable firewalld and selinux on Bastion host and LB node.
+```bash
+systemctl disable firewalld --now
+sed -i 's/enforcing/disabled/' /etc/selinux/config
+```
+Then reboot the VM.
+![Disabled selinux and firewalld](Images/1.1.gif)
+
+#Install openshift-install cli, oc and kubectl utilities.
+
 
 ```bash
 dnf install -y wget git curl jq bind-utils
@@ -55,8 +65,12 @@ sudo mv openshift-install /usr/local/bin/
 
 tar -xzf openshift-client-linux.tar.gz
 sudo mv oc kubectl /usr/local/bin/
+```
+![Tools installation](Images/1.gif)
 
+#Configure DNS and DHCP
 
+```bash
 dnf install dnsmasq -y
 
 > /etc/dnsmasq.conf       #remove all current configs in the file.
@@ -96,13 +110,11 @@ dhcp-host=00:50:56:b3:6a:d0,192.168.4.23
 
 dhcp-host=00:50:56:b3:f0:eb,192.168.4.24
 dhcp-host=00:50:56:b3:0e:f1,192.168.4.25
-
-
 ```
-![1](Images/1.gif)
+![DNS Setup](Images/2.gif)
 
 
-Configure /etc/dnshost file.
+#Configure /etc/dnshost file.
 
 ```bash
 vim /etc/dnshost
@@ -182,6 +194,7 @@ listen ingress-router-80
   server worker2 worker2.ocp4.tayyabtahir.com:80 check inter 1s
 
 ```
+![haproxy](Images/haproxy.gif)
 
 ---
 
