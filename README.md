@@ -1,4 +1,4 @@
-# 🚀 OpenShift 4.x UPI Installation on vSphere (v8)
+# 🚀 OpenShift 4.18 UPI Installation on vSphere (v8)
 
 This guide provides a step-by-step walkthrough for deploying an OpenShift 4.18 cluster using User Provisioned Infrastructure (UPI) on a VMware vSphere environment.
 
@@ -7,6 +7,7 @@ This guide provides a step-by-step walkthrough for deploying an OpenShift 4.18 c
 ## ✅ Overview
 
 - **Cluster Topology:**
+  - 1 x Bootstrap Node (Temporary) 
   - 3 x Control Plane (Master) Nodes
   - 2 x Compute (Worker) Nodes
   - 1 x HAProxy Load Balancer (CentOS10)
