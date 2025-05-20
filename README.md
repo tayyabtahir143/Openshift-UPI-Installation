@@ -11,7 +11,7 @@ This guide provides a step-by-step walkthrough for deploying an OpenShift 4.18 c
   - 3 x Control Plane (Master) Nodes
   - 2 x Compute (Worker) Nodes
   - 1 x HAProxy Load Balancer (CentOS10)
-  - 1 x DNS Server + Bastion Host (CentOS10)
+  - 1 x DNS+DHCP Server + Bastion Host (CentOS10)
 
 - **Platform:** vSphere 8.0
 - **Domain:** `ocp4.tayyabtahir.com`
@@ -21,22 +21,23 @@ This guide provides a step-by-step walkthrough for deploying an OpenShift 4.18 c
 
 
 ---
-## Important: Openshift installation depend on these 2 dns records, they should be redirected to haproxy and haproxy should redirect them to all master nodes.
+## Important: OpenShift installation depend on these 2 dns records, they should be redirected to haproxy, and haproxy should redirect them to all master nodes.
 * api-int.ocp4.tayyabtahir.com
 * api.ocp4.tayyabtahir.com
 
-These records are mandatory, all other records are optional, but better to have them as well.
+These records are mandatory; all other records are optional, but it's better to have them as well.
 
 ---
 
 ## 🏠 Environment Prerequisites
 
-- vCenter Server accessible from the bastion
-- Static IPs reserved for all nodes and LB
-- DNS server for internal name resolution
-- RHCOS ISO downloaded
-- Pull secret from Red Hat account
-- Internet access (for image pulling)
+- vCenter Server accessible from the bastion.
+- Static IPs are reserved for all nodes and the LB.
+- DNS server for internal name resolution.
+- DHCP server for IP address binding.
+- RHCOS OVA template.
+- Pull secret from Red Hat account.
+- Internet access. (for image pulling)
 
 ---
 
@@ -57,7 +58,7 @@ These records are mandatory, all other records are optional, but better to have 
 ---
 
 ## 🚧 Tooling Setup
-Disable firewalld and selinux on Bastion host and LB node.
+Disable firewalld and SELinux on the Bastion host and the LB node.
 ```bash
 systemctl disable firewalld --now
 sed -i 's/enforcing/disabled/' /etc/selinux/config
@@ -65,7 +66,7 @@ sed -i 's/enforcing/disabled/' /etc/selinux/config
 Then reboot the VM.
 ![Disabled selinux and firewalld](Images/1.1.gif)
 
-#Install openshift-install cli, oc and kubectl utilities.
+#Install openshift-install cli, oc, and kubectl utilities.
 
 
 ```bash
@@ -101,7 +102,7 @@ addn-hosts=/etc/dnshost
 domain=ocp4.tayyabtahir.com
 #domain=assister.local
 resolv-file=/etc/resolv.conf
-address=/.apps.ocp4.tayyabtahir.com/192.168.4.28    #Wildcard dns record.                                                        
+address=/.apps.ocp4.tayyabtahir.com/192.168.4.28    #Wildcard DNS record.                                                        
 #address=/.apps.oscp.intern.beon.net/10.1.13.196
 
 ##DHCP Configuration
@@ -215,9 +216,9 @@ listen ingress-router-80
 
 ## 📚 Create install-config.yaml
 
-Copy the pull secret from Redhat Openshift Console: https://console.redhat.com/openshift/install/vsphere/user-provisioned , and add in install-config.yaml file.
+Copy the pull secret from Red Hat OpenShift Console: https://console.redhat.com/openshift/install/vsphere/user-provisioned, and add it to install-config.yaml file.
 
-Add your public ssh key which can be generated with the command:
+Add your public SSH key, which can be generated with the command:
 ssh-keygen
 
 
@@ -319,14 +320,14 @@ https://github.com/user-attachments/assets/c1374902-e162-45cf-8fd2-ed38082c6631
 openshift-install create ignition-configs --dir ocp4
 ```
 ![Generating ignition configs](Images/4.gif)
-Ignition files have been generated. we need to convert them into the base64 encoding to use them as advance parameters in vsphere VMs.
+Ignition files have been generated. We need to convert them into base64 encoding to use them as advanced parameters in vSphere VMs.
 
 ```bash
 cd ocp4
 base64 -w0 master.ign > master.64
 base64 -w0 worker.ign > worker.64
 ```
-bootstrap.ign file is too large so we will upload it in the webserver and we will create merge-bootstrap.ign file to redirect bootstrap VM's traffic that webserver.
+bootstrap.ign file is too large so we will upload it in the web server, and we will create a merge-bootstrap.ign file to redirect the bootstrap VM's traffic that web server.
 
 ```bash
 vim merge-bootstrap.ign
@@ -355,7 +356,7 @@ Then convert this merge-bootstrap.ign in base64 encoding.
 base64 -w0 merge-bootstrap.ign > merge-bootstrap.64
 ```
 
-Configure the webserver and move the bootstrap.ign file in document root directory.
+Configure the web server and move the bootstrap.ign file in the document root directory.
 
 ```bash
 dnf install httpd -y
@@ -370,7 +371,7 @@ systemctl enable httpd --now
 ## 🚗 Create vSphere VMs
 Obtain the RHCOS OVA image. Images are available from the RHCOS image mirror page:https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/
 
-Download the latest RHCOS and create a template in vsphere. using this template we can create all master and worker VMs.
+Download the latest RHCOS and create a template in vSphere. Using this template, we can create all master and worker VMs.
 ![creating RHCOS template](Images/6.gif)
 
 Provision the following:
@@ -378,8 +379,8 @@ Provision the following:
 - `master-1/2/3`: RHCOS with `master.64`
 - `worker-1/2`: RHCOS with `worker.64`
 
-Create the Bootstrap VM from template with $ CPUs and 16GB RAM.
-Go to advance Parameters and set the following values:
+Create the Bootstrap VM from the template with $ CPUs and 16GB RAM.
+Go to Advanced Parameters and set the following values:
 
 guestinfo.ignition.config.data : "merge-bootstrap.64 file value"
 
@@ -400,7 +401,7 @@ Create worker1 and worker2 VMs.
 ---
 
 ## MAC Address to IP Binding.
-copy the mac addresses of all VMs and update them in dnsmasq file as per diagram.
+Copy the MAC addresses of all VMs and update them in the dnsmasq file as per the diagram.
 
 ```bash
 vim /etc/dnsmasq.conf
@@ -418,12 +419,12 @@ dhcp-host=00:50:56:b3:24:01,192.168.4.25
 ---
 
 ## ⏳ Bootstrap Completion
-Start the bootstrap VM and verify if it has got the ignition data?
+Start the bootstrap VM and verify if it has loaded the ignition data?
 
 ![starting bootstrap](Images/12.png)
 
 
-Run this command in bastian host installation directory: 
+Run this command in Bastian host installation directory: 
 ```bash
 openshift-install wait-for bootstrap-complete --dir ocp4 --log-level=info
 ```
@@ -440,7 +441,7 @@ journalctl -b -f -u release-image.service -u bootkube.service
 
 Start all the master nodes as well. and wait for almost 01:30 hours.
 
-Once the "wait-for bootstrap-complete" command completes, Configure the kubeconfig file from the installation directory and verify the master nodes.
+Once the "wait-for bootstrap-complete" command completes, configure the kubeconfig file from the installation directory and verify the master nodes.
 
 
 
@@ -469,7 +470,7 @@ Start the worker nodes, and wait for 20 minutes.
 ![Starting workers node](Images/15.gif)
 
 
-Verify if there is any certificate pending? if yes, approve them with the following command.
+Verify if there is any certificate pending? If yes, approve them with the following command.
 
 Check:
 ```bash
@@ -481,7 +482,7 @@ oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{
 ![Verifying worker nodes](Images/16.gif)
 
 
-Once certificates are approved, wait for 15 minutes. Worker nodes should come up in the ready state and all Cluster operators will be ready as well.
+Once certificates are approved, wait for 15 minutes. Worker nodes should come up in the ready state, and all Cluster operators will be ready as well.
 
 ![certification approval](Images/17.gif)
 
@@ -501,9 +502,9 @@ oc get route -n openshift-console
 
 ---
 
-## Access openshift console on the web.
-Open kubeadmin-password file in openshift installation directory /ocp4/auth/.
-It contain the kebeadmin password to access the web console.
+## Access OpenShift console on the web.
+Open the kubeadmin-password file in the openshift installation directory /ocp4/auth/.
+It contains the kebeadmin password to access the web console.
 
 
 ```bash
